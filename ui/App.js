@@ -1,8 +1,8 @@
-import { Fragment, createElement as h } from "react";
-import { ShipDetails } from "./ship-details.js";
-import { SearchResults } from "./ship-search-results.js";
+import { Fragment, Suspense, createElement as h } from "react";
+import { ShipDetails, ShipFallback } from "./ship-details.js";
+import { SearchResults, SearchResultsFallback } from "./ship-search-results.js";
 
-export function App({ shipId, search, ship, shipResults }) {
+export function App({ shipId, search }) {
   return h(
     "div",
     { className: "app" },
@@ -23,14 +23,19 @@ export function App({ shipId, search, ship, shipResults }) {
             autoFocus: true,
           })
         ),
-        h("ul", null, h(SearchResults, { shipId, search, shipResults }))
+        h(
+          "ul",
+          null,
+          h(Suspense, { fallback: h(SearchResultsFallback) }, h(SearchResults))
+        )
       )
     ),
+
     h(
       "div",
       { className: "details" },
       shipId
-        ? h(ShipDetails, { ship })
+        ? h(Suspense, { fallback: h(ShipFallback) }, h(ShipDetails))
         : h("p", null, "Select a ship from the list to see details")
     )
   );

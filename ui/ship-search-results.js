@@ -1,7 +1,11 @@
 import { createElement as h } from "react";
-import { getImageUrlForShip } from "./img-utils.js";
+import { searchShips } from "../db/ship-apis.js";
+import { getImageUrlForShip, shipFallbackSrc } from "./img-utils.js";
+import { shipDataStorage } from "../server/async-storage.js";
 
-export function SearchResults({ shipId: currentShipId, shipResults, search }) {
+export async function SearchResults() {
+  const { shipId: currentShipId, search } = shipDataStorage.getStore();
+  const shipResults = await searchShips({ search });
   return shipResults.ships.map((ship) => {
     const href = [
       `/${ship.id}`,
@@ -26,4 +30,21 @@ export function SearchResults({ shipId: currentShipId, shipResults, search }) {
       )
     );
   });
+}
+
+export function SearchResultsFallback() {
+  return Array.from({
+    length: 12,
+  }).map((_, i) =>
+    h(
+      "li",
+      { key: i },
+      h(
+        "a",
+        { href: "#" },
+        h("img", { src: shipFallbackSrc, alt: "loading" }),
+        "... loading"
+      )
+    )
+  );
 }

@@ -1,5 +1,6 @@
 import { Suspense, createElement as h, startTransition, use } from "react";
 import { createRoot } from "react-dom/client";
+import { shipFallbackSrc } from "./img-utils.js";
 
 // 💰 you're going to want this:
 import { createFromFetch } from "react-server-dom-esm/client";
@@ -26,3 +27,23 @@ function Root() {
   // 🐨 return the content
   return content;
 }
+
+// 🐨 call createRoot with the Root component
+startTransition(() => {
+  createRoot(document.getElementById("root")).render(
+    h(
+      "div",
+      { className: "app-wrapper" },
+      h(
+        Suspense,
+        {
+          fallback: h("img", {
+            style: { maxWidth: 400 },
+            src: shipFallbackSrc,
+          }),
+        },
+        h(Root)
+      )
+    )
+  );
+});
